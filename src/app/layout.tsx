@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Chimera Tool - Precios Oficiales",
-  description: "Precios de licencias y créditos de Chimera Tool en ARS, actualizados al instante.",
+  title: "FRP KILL",
+  description: "Precios de licencias y créditos en ARS.",
 };
 
 export default function RootLayout({
