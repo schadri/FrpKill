@@ -33,9 +33,19 @@ export default function ProfileClient({ user }: { user: UserData }) {
   const supabase = createClient();
 
   useEffect(() => {
-    // Load local purchases
-    const localPurchases = JSON.parse(localStorage.getItem('my_orders') || '[]');
-    setPurchases(localPurchases);
+    // Load absolute purchases from Supabase DB
+    const fetchOrders = async () => {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (!error && data) {
+        setPurchases(data);
+      }
+    };
+    
+    fetchOrders();
 
     // Check successful payment from Mercado Pago
     if (searchParams.get('payment') === 'success' || searchParams.get('status') === 'approved') {
@@ -43,26 +53,37 @@ export default function ProfileClient({ user }: { user: UserData }) {
       const currentCart = currentCartRaw ? JSON.parse(currentCartRaw) : items;
 
       if (currentCart && currentCart.length > 0) {
-        // Save the current cart as a new completed order
-        const newOrder = {
-          id: `ORD-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`,
-          date: new Intl.DateTimeFormat('es-AR', { dateStyle: 'medium' }).format(new Date()),
-          items: currentCart.map((i: any) => `${i.quantity}x ${i.product.name}`).join(', '),
-          total: `$${currentCart.reduce((acc: number, val: any) => acc + val.finalArs * val.quantity, 0).toLocaleString('es-AR')} ARS`,
-          status: 'Completado'
+        const processOrder = async () => {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) return;
+
+          const newOrder = {
+            user_id: user.id,
+            order_number: `ORD-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`,
+            items: currentCart.map((i: any) => `${i.quantity}x ${i.product.name}`).join(', '),
+            total_ars: `$${currentCart.reduce((acc: number, val: any) => acc + val.finalArs * val.quantity, 0).toLocaleString('es-AR')} ARS`,
+            status: 'Completado'
+          };
+
+          const { error: insertError } = await supabase.from('orders').insert([newOrder]);
+
+          if (!insertError) {
+            fetchOrders(); // Refresh table exactly as it is in the DB
+            clearCart();
+            setMessage('¡Pago completado con éxito! Tus artículos han sido agregados permanentemente a tu historial de compras.');
+            setActiveTab('purchases');
+          } else {
+            console.error(insertError);
+            setError('Error de base de datos guardando la orden. Habla con soporte.');
+          }
+
+          router.replace('/profile');
         };
-        const updatedOrders = [newOrder, ...localPurchases];
-        localStorage.setItem('my_orders', JSON.stringify(updatedOrders));
-        setPurchases(updatedOrders);
-        clearCart(); // Will wipe context and localStorage
-        setMessage('¡Pago completado con éxito! Tus artículos han sido agregados a tu historial de compras.');
-        setActiveTab('purchases');
-        
-        // Remove query parameters smoothly to avoid multiple processing on reloads
-        router.replace('/profile');
+
+        processOrder();
       }
     }
-  }, [searchParams, items, clearCart, router]);
+  }, [searchParams, items, clearCart, router, supabase]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -199,10 +220,10 @@ export default function ProfileClient({ user }: { user: UserData }) {
                     <tbody>
                       {purchases.map((purchase: any) => (
                         <tr key={purchase.id}>
-                          <td>{purchase.id}</td>
-                          <td>{purchase.date}</td>
+                          <td>{purchase.order_number}</td>
+                          <td>{new Intl.DateTimeFormat('es-AR', { dateStyle: 'medium' }).format(new Date(purchase.created_at))}</td>
                           <td>{purchase.items}</td>
-                          <td>{purchase.total}</td>
+                          <td>{purchase.total_ars}</td>
                           <td><span className={styles.statusBadge}>{purchase.status}</span></td>
                         </tr>
                       ))}
