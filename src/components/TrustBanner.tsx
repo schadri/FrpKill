@@ -11,7 +11,7 @@ export default function TrustBanner() {
           </p>
           <br />
           <p className={styles.text}>
-            Antes de Realizar una compra verifica que tu cuenta de Chimera este activa o crear una en <a href="https://chimeratool.com/es/login" target="_blank" rel="noopener noreferrer" className={styles.highlightLink}>Chimera Tool</a>. Recuerda enviar las credenciales por WhatsApp una vez realizada la compra para poder activar tu licencia o créditos.
+            Antes de Realizar una compra verifica que tu cuenta de Chimera este activa o crear una en <a href="https://chimeratool.com/es/login" target="_blank" rel="noopener noreferrer" className={styles.highlightLink}>Chimera Tool</a>. Recuerda enviar las credenciales por WhatsApp o en el Perfil. Una vez realizada la compra para poder activar tu licencia o créditos.
           </p>
         </div>
 

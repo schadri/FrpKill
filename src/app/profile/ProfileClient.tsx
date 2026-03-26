@@ -10,6 +10,8 @@ interface UserData {
   email: string | undefined;
   fullName: string;
   avatarUrl: string;
+  chimeraUser?: string;
+  chimeraPassword?: string;
 }
 
 export default function ProfileClient({ user }: { user: UserData }) {
@@ -20,6 +22,9 @@ export default function ProfileClient({ user }: { user: UserData }) {
   const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl);
   const [email, setEmail] = useState(user.email || '');
   const [password, setPassword] = useState('');
+  
+  const [chimeraUser, setChimeraUser] = useState(user.chimeraUser || '');
+  const [chimeraPassword, setChimeraPassword] = useState(user.chimeraPassword || '');
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -95,6 +100,8 @@ export default function ProfileClient({ user }: { user: UserData }) {
       data: {
         full_name: fullName,
         avatar_url: avatarUrl,
+        chimera_user: chimeraUser,
+        chimera_password: chimeraPassword,
       }
     };
 
@@ -174,8 +181,31 @@ export default function ProfileClient({ user }: { user: UserData }) {
 
                 <hr className={styles.divider} />
 
+                <h3 style={{color: '#fff', fontSize: '1.1rem', marginBottom: '1rem', marginTop: '1rem'}}>
+                  Credenciales de Chimera Tool
+                </h3>
+                <small style={{display: 'block', color: '#fb7185', background: 'rgba(244, 63, 94, 0.1)', padding: '0.8rem', borderRadius: '6px', marginBottom: '1.5rem', fontWeight: 600}}>
+                  ⚠️ Importante: Tanto el usuario como contraseña distingue mayúsculas y minúsculas, escribilo bien o la activación de tu licencia/créditos podría fallar o demorarse.
+                </small>
+
                 <div className={styles.inputGroup}>
-                  <label>Correo Electrónico</label>
+                  <label>Usuario de Chimera</label>
+                  <input type="text" value={chimeraUser} onChange={e => setChimeraUser(e.target.value)} placeholder="Tu nombre de usuario en Chimera" />
+                </div>
+
+                <div className={styles.inputGroup}>
+                  <label>Contraseña de Chimera</label>
+                  <input type="text" value={chimeraPassword} onChange={e => setChimeraPassword(e.target.value)} placeholder="Tu contraseña exacta" />
+                </div>
+
+                <hr className={styles.divider} />
+
+                <h3 style={{color: '#fff', fontSize: '1.1rem', marginBottom: '1rem', marginTop: '1rem'}}>
+                  Seguridad de la Cuenta
+                </h3>
+
+                <div className={styles.inputGroup}>
+                  <label>Correo Electrónico (Login)</label>
                   <input type="email" value={email} onChange={e => setEmail(e.target.value)} />
                 </div>
 
