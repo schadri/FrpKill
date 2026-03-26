@@ -39,19 +39,22 @@ export default function ProfileClient({ user }: { user: UserData }) {
 
     // Check successful payment from Mercado Pago
     if (searchParams.get('payment') === 'success' || searchParams.get('status') === 'approved') {
-      if (items.length > 0) {
+      const currentCartRaw = localStorage.getItem('shopping_cart');
+      const currentCart = currentCartRaw ? JSON.parse(currentCartRaw) : items;
+
+      if (currentCart && currentCart.length > 0) {
         // Save the current cart as a new completed order
         const newOrder = {
           id: `ORD-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`,
           date: new Intl.DateTimeFormat('es-AR', { dateStyle: 'medium' }).format(new Date()),
-          items: items.map((i: any) => `${i.quantity}x ${i.product.name}`).join(', '),
-          total: `$${items.reduce((acc: number, val: any) => acc + val.finalArs * val.quantity, 0).toLocaleString('es-AR')} ARS`,
+          items: currentCart.map((i: any) => `${i.quantity}x ${i.product.name}`).join(', '),
+          total: `$${currentCart.reduce((acc: number, val: any) => acc + val.finalArs * val.quantity, 0).toLocaleString('es-AR')} ARS`,
           status: 'Completado'
         };
         const updatedOrders = [newOrder, ...localPurchases];
         localStorage.setItem('my_orders', JSON.stringify(updatedOrders));
         setPurchases(updatedOrders);
-        clearCart();
+        clearCart(); // Will wipe context and localStorage
         setMessage('¡Pago completado con éxito! Tus artículos han sido agregados a tu historial de compras.');
         setActiveTab('purchases');
         
@@ -59,7 +62,7 @@ export default function ProfileClient({ user }: { user: UserData }) {
         router.replace('/profile');
       }
     }
-  }, [searchParams]);
+  }, [searchParams, items, clearCart, router]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
