@@ -1,0 +1,219 @@
+.card {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 2px;
+  overflow: hidden;
+  text-decoration: none;
+  display: block;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2);
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.cardGlow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.1) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.card:hover .cardGlow {
+  opacity: 1;
+}
+
+.cardContent {
+  position: relative;
+  background: var(--background-end_rgb);
+  /* Use a slightly darker background to simulate card depth */
+  background: rgba(2, 6, 23, 0.8);
+  border-radius: 14px;
+  padding: 1.5rem;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.productName {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.pricing {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.usdPrice,
+.arsPrice {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.currencyLabel {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.usdValue {
+  font-size: 1.25rem;
+  color: #fff;
+  font-weight: 500;
+}
+
+.arsValue {
+  font-size: 1.75rem;
+  color: var(--primary-color);
+  font-weight: 700;
+  text-shadow: 0 0 15px var(--primary-glow);
+}
+
+.divider {
+  height: 1px;
+  background: var(--card-border);
+  width: 100%;
+}
+
+.buyButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.875rem;
+  border-radius: 8px;
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--primary-color);
+  font-weight: 600;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  transition: all 0.3s ease;
+}
+
+.card:hover .buyButton {
+  background: var(--primary-color);
+  color: #000;
+  border-color: var(--primary-color);
+}
+
+.arrowIcon {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .arrowIcon {
+  transform: translateX(4px);
+}
+
+.error {
+  color: var(--accent-color);
+  padding: 1rem;
+  text-align: center;
+  background: rgba(244, 63, 94, 0.1);
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.imageContainer {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.productImage {
+  object-fit: cover;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.expanded:hover {
+  transform: none;
+}
+
+.descriptionWrapper {
+  margin-top: 1rem;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  animation: slideDown 0.3s ease-out forwards;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.descriptionContent p {
+  margin-bottom: 0.75rem;
+  color: #fff;
+}
+
+.descriptionContent ul {
+  padding-left: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.descriptionContent li {
+  margin-bottom: 0.5rem;
+}
+
+.actionsWrapper {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.expandHint {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--primary-color);
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+  font-weight: 500;
+}
+
+.clickable:hover .expandHint {
+  opacity: 1;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
