@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
+import { useCart } from '@/context/CartContext';
 import styles from './Profile.module.css';
 
 interface UserData {
@@ -23,7 +25,41 @@ export default function ProfileClient({ user }: { user: UserData }) {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
+  const [purchases, setPurchases] = useState<any[]>([]);
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { items, totalArs, clearCart } = useCart();
   const supabase = createClient();
+
+  useEffect(() => {
+    // Load local purchases
+    const localPurchases = JSON.parse(localStorage.getItem('my_orders') || '[]');
+    setPurchases(localPurchases);
+
+    // Check successful payment from Mercado Pago
+    if (searchParams.get('payment') === 'success' || searchParams.get('status') === 'approved') {
+      if (items.length > 0) {
+        // Save the current cart as a new completed order
+        const newOrder = {
+          id: `ORD-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`,
+          date: new Intl.DateTimeFormat('es-AR', { dateStyle: 'medium' }).format(new Date()),
+          items: items.map((i: any) => `${i.quantity}x ${i.product.name}`).join(', '),
+          total: `$${items.reduce((acc: number, val: any) => acc + val.finalArs * val.quantity, 0).toLocaleString('es-AR')} ARS`,
+          status: 'Completado'
+        };
+        const updatedOrders = [newOrder, ...localPurchases];
+        localStorage.setItem('my_orders', JSON.stringify(updatedOrders));
+        setPurchases(updatedOrders);
+        clearCart();
+        setMessage('¡Pago completado con éxito! Tus artículos han sido agregados a tu historial de compras.');
+        setActiveTab('purchases');
+        
+        // Remove query parameters smoothly to avoid multiple processing on reloads
+        router.replace('/profile');
+      }
+    }
+  }, [searchParams]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,28 +178,34 @@ export default function ProfileClient({ user }: { user: UserData }) {
               <p className={styles.cardSubtitle}>Aquí aparecerán tus licencias y créditos adquiridos recientemente.</p>
               
               <div className={styles.tableContainer}>
-                <table className={styles.purchasesTable}>
-                  <thead>
-                    <tr>
-                      <th>Orden</th>
-                      <th>Fecha</th>
-                      <th>Artículos</th>
-                      <th>Total</th>
-                      <th>Estado</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {mockPurchases.map(purchase => (
-                      <tr key={purchase.id}>
-                        <td>{purchase.id}</td>
-                        <td>{purchase.date}</td>
-                        <td>{purchase.items}</td>
-                        <td>{purchase.total}</td>
-                        <td><span className={styles.statusBadge}>{purchase.status}</span></td>
+                {purchases.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-muted)' }}>
+                    <p>Aún no tienes compras registradas.</p>
+                  </div>
+                ) : (
+                  <table className={styles.purchasesTable}>
+                    <thead>
+                      <tr>
+                        <th>Orden</th>
+                        <th>Fecha</th>
+                        <th>Artículos</th>
+                        <th>Total</th>
+                        <th>Estado</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {purchases.map((purchase: any) => (
+                        <tr key={purchase.id}>
+                          <td>{purchase.id}</td>
+                          <td>{purchase.date}</td>
+                          <td>{purchase.items}</td>
+                          <td>{purchase.total}</td>
+                          <td><span className={styles.statusBadge}>{purchase.status}</span></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             </div>
           )}

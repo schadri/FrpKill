@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
@@ -8,9 +8,39 @@ import styles from './Cart.module.css';
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, clearCart, totalItems, totalArs } = useCart();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const formatPrice = (amount: number) => {
     return amount.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  };
+
+  const handleCheckout = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Error procesando el pago');
+      }
+      
+      if (data.init_point) {
+        // Redirect standard window location to Mercado Pago's checkout url
+        window.location.href = data.init_point;
+      }
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message);
+      setLoading(false);
+    }
   };
 
   if (items.length === 0) {
@@ -92,8 +122,14 @@ export default function CartPage() {
               <span>ARS ${formatPrice(totalArs)}</span>
             </div>
 
-            <button className={styles.checkoutBtn} onClick={() => alert('¡Funcionalidad de pago / checkout!')}>
-              Finalizar Compra
+            {error && <div className={styles.errorBanner}>{error}</div>}
+
+            <button 
+              className={styles.checkoutBtn} 
+              onClick={handleCheckout}
+              disabled={loading}
+            >
+              {loading ? 'Procesando...' : 'Finalizar Compra'}
             </button>
           </div>
         </div>

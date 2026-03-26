@@ -43,6 +43,9 @@ export default function LoginForm() {
       email, 
       password,
       options: {
+        data: {
+          full_name: email.split('@')[0], // Provide a default name to satisfy strict DB triggers
+        },
         emailRedirectTo: `${window.location.origin}/auth/callback`
       }
     });
