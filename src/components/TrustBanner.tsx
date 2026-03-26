@@ -9,6 +9,10 @@ export default function TrustBanner() {
           <p className={styles.text}>
             No somos distribuidores oficiales de Chimera Tool, pero facilitamos la adquisición de licencias y créditos para toda Argentina de forma directa, rápida y totalmente segura. ¿Necesitas ayuda o tienes alguna duda? No hay problema, hablanos directo a nuesto WhatsApp
           </p>
+          <br />
+          <p className={styles.text}>
+            Antes de Realizar una compra verifica que tu cuenta de Chimera este activa o crear una en <a href="https://chimeratool.com/es/login" target="_blank" rel="noopener noreferrer" className={styles.highlightLink}>Chimera Tool</a>. Recuerda enviar las credenciales por WhatsApp una vez realizada la compra para poder activar tu licencia o créditos.
+          </p>
         </div>
 
         <div className={styles.actionColumn}>

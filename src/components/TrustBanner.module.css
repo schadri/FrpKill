@@ -71,3 +71,17 @@
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+.highlightLink {
+  color: var(--primary-color, #38bdf8);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: rgba(56, 189, 248, 0.4);
+  text-underline-offset: 3px;
+  transition: all 0.2s ease;
+}
+
+.highlightLink:hover {
+  text-decoration-color: var(--primary-color, #38bdf8);
+  color: #fff;
+}
