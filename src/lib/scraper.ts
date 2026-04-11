@@ -120,15 +120,6 @@ export const credits = [
       </ul>
     `
   },
-  { 
-    name: 'Creditos test', 
-    slug: 'creditos-test', 
-    url: 'test', 
-    image: '/Creditos/150%20creditos.png',
-    description: `
-      <p>Créditos de prueba con valor de 10 USD.</p>
-    `
-  },
 ];
 
 const fetchWithTimeout = async (url: string, options: RequestInit = {}): Promise<Response> => {
@@ -169,10 +160,6 @@ export async function getDolarConversionRate(): Promise<number | null> {
 }
 
 export async function getProductPrice(url: string): Promise<number | null> {
-  if (url === 'test') {
-    return 10;
-  }
-
   try {
     const response = await fetchWithTimeout(url, {
       next: { revalidate: 3600 },
