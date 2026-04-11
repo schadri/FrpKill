@@ -50,7 +50,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const existing = prev.find(item => item.product.slug === product.slug);
       
       const rawArs = (product.usdPrice || 0) * conversionRate + 15000;
-      const finalArs = Math.ceil(rawArs / 1000) * 1000;
+      let finalArs = Math.ceil(rawArs / 1000) * 1000;
+      if (product.url === 'test') {
+        finalArs = 10;
+      }
 
       if (existing) {
         return prev.map(item => 
